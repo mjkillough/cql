@@ -18,7 +18,7 @@ HEADERS = $(wildcard *.h)
 
 tests: $(OBJECTS)
 	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@
-	./$@ -f -v
+	./$@ -v
 
 clean:
 	-rm -f *.o

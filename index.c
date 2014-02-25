@@ -48,5 +48,21 @@ page_t* page_pool_get_page(page_pool_t *pool, size_t index)
     return pool->pages[index];
 }
 
+void page_pool_free(page_pool_t *pool)
+{
+    if (pool == NULL) {
+        printf("Warning: tried to free NULL page_pool_t*\n");
+        return;
+    }
+    for (int i = 0; i < pool->len; i++) {
+        if (pool->pages[i] == NULL) {
+            printf("Found a NULL pointer to a page when freeing a pool\n");
+            continue;
+        }
+        free(pool->pages[i]);
+    }
+    free(pool);
+}
+
 // TODO: add page_free -- why would you ever want to deallocate? :)
 

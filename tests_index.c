@@ -18,6 +18,8 @@ TEST test_page_pool_init__normal()
     for (int i = 0; i < pool->max_len; i++)
         ASSERT_EQ(pool->pages[0], NULL);
 
+    page_pool_free(pool);
+
     PASS();
 }
 
@@ -42,6 +44,9 @@ TEST test_page_pool_init__twice()
     ASSERT(pool2 != NULL);
     ASSERT(pool1 != pool2);
 
+    page_pool_free(pool1);
+    page_pool_free(pool2);
+
     PASS();
 }
 
@@ -57,6 +62,8 @@ TEST test_page_pool_create_page__normal()
     ASSERT(page != NULL);
     for (int i = 0; i < PAGE_SIZE; i++)
         ASSERT_EQ(page->data[i], 0);
+
+    page_pool_free(pool);
 
     PASS();
 }
@@ -77,6 +84,8 @@ TEST test_page_pool_create_page__twice()
     ASSERT(page2 != NULL);
     ASSERT(page1 != page2);
 
+    page_pool_free(pool);
+
     PASS();
 }
 
@@ -94,6 +103,8 @@ TEST test_page_pool_create_page__pool_full()
     ASSERT(page1 != NULL);
     ASSERT_EQ(index2, 1338);
     ASSERT(page2 == NULL);
+
+    page_pool_free(pool);
 
     PASS();
 }
@@ -113,6 +124,9 @@ TEST test_page_pool_create_page__two_pools()
     ASSERT(page1 != NULL);
     ASSERT(page2 != NULL);
     ASSERT(page1 != page2);
+
+    page_pool_free(pool1);
+    page_pool_free(pool2);
 
     PASS();
 }
@@ -139,6 +153,8 @@ TEST test_page_pool_get_page__normal()
     ASSERT_EQ(page1, page1_again);
     ASSERT_EQ(page2, page2_again);
 
+    page_pool_free(pool);
+
     PASS();
 }
 
@@ -155,6 +171,8 @@ TEST test_page_pool_get_page__not_allocated()
     // there could be other problems getting the 0th page
     page = page_pool_get_page(pool, 0);
     ASSERT_EQ(page, NULL);
+
+    page_pool_free(pool);
 
     PASS();
 }
@@ -179,6 +197,8 @@ TEST test_page_pool_get_page__outside_max_len()
     // test w/ non-empty pool
     page1 = page_pool_get_page(pool, 3);
     ASSERT_EQ(page1, NULL);
+
+    page_pool_free(pool);
 
     PASS();
 }
@@ -205,6 +225,42 @@ TEST test_page_pool_get_page__two_pools()
     ASSERT_EQ(page1, page1_again);
     ASSERT_EQ(page2, page2_again);
 
+    page_pool_free(pool1);
+    page_pool_free(pool2);
+
+    PASS();
+}
+
+
+TEST test_page_pool_free__empty()
+{
+    // Should be able to free an empty page_pool.
+    page_pool_t *pool = page_pool_init(3);
+    page_pool_free(pool);
+
+    // XXX how to check the free()?
+    PASS();
+}
+
+
+TEST test_page_pool_free__nonempty()
+{
+    // Freeing a non-empty page_pool should free the pages.
+    page_pool_t *pool = page_pool_init(3);
+    size_t index;
+    page_pool_create_page(pool, &index);
+    page_pool_free(pool);
+
+    // XXX how to check the free()?
+    PASS();
+}
+
+
+TEST test_page_pool_free__null()
+{
+    // Nothing bad should happen (except maybe an error msg) if we pass NULL.
+    page_pool_free(NULL);
+
     PASS();
 }
 
@@ -214,12 +270,18 @@ GREATEST_SUITE(page_pool_suite)
     RUN_TEST(test_page_pool_init__normal);
     RUN_TEST(test_page_pool_init__too_small);
     RUN_TEST(test_page_pool_init__twice);
+
     RUN_TEST(test_page_pool_create_page__normal);
     RUN_TEST(test_page_pool_create_page__twice);
     RUN_TEST(test_page_pool_create_page__pool_full);
     RUN_TEST(test_page_pool_create_page__two_pools);
+
     RUN_TEST(test_page_pool_get_page__normal);
     RUN_TEST(test_page_pool_get_page__not_allocated);
     RUN_TEST(test_page_pool_get_page__outside_max_len);
     RUN_TEST(test_page_pool_get_page__two_pools);
+
+    RUN_TEST(test_page_pool_free__empty);
+    RUN_TEST(test_page_pool_free__nonempty);
+    RUN_TEST(test_page_pool_free__null);
 }

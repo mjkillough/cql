@@ -16,6 +16,7 @@ typedef struct {
 page_pool_t* page_pool_init(size_t max_pages);
 page_t* page_pool_create_page(page_pool_t *pool, size_t *index);
 page_t* page_pool_get_page(page_pool_t *pool, size_t index);
+void page_pool_free(page_pool_t *pool);
 
 typedef enum {
     NODE_TYPE_INTERNAL,

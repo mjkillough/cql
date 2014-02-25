@@ -133,7 +133,7 @@ TEST test_page_pool_get_page__outside_max_len() {
     PASS();
 }
 
-GREATEST_SUITE(index_suite) {
+GREATEST_SUITE(page_pool_suite) {
     RUN_TEST(test_page_pool_init__normal);
     RUN_TEST(test_page_pool_init__too_small);
     RUN_TEST(test_page_pool_create_page__normal);

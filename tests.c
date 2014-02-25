@@ -1,7 +1,7 @@
 #include "greatest.h"
 
 
-extern SUITE(index_suite); // tests_index.c
+extern SUITE(page_pool_suite); // tests_index.c
 
 
 GREATEST_MAIN_DEFS();
@@ -10,6 +10,6 @@ GREATEST_MAIN_DEFS();
 int main(int argc, char **argv)
 {
     GREATEST_MAIN_BEGIN();
-    RUN_SUITE(index_suite);
+    RUN_SUITE(page_pool_suite);
     GREATEST_MAIN_END();
 }

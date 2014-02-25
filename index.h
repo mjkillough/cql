@@ -45,14 +45,15 @@ typedef struct {
 } leaf_node_t;
 
 typedef struct {
-    size_t order;
     size_t key_size;
     size_t data_size;
     internal_node_t *root;
+    page_pool_t *pool;
 } btree_t;
 
-btree_t* btree_allocate(page_pool_t *pool, size_t order, size_t key_size, size_t data_size);
-void btree_insert(btree_t *tree, page_pool_t *pool, char *key, char *data);
-
+btree_t* btree_allocate(page_pool_t *pool, size_t key_size, size_t data_size);
+void btree_insert(btree_t *tree, char *key, char *data);
+void btree_search(btree_t *tree, char *key, char **data);
+void btree_free(btree_t *tree);
 
 #endif

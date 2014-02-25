@@ -285,3 +285,94 @@ GREATEST_SUITE(page_pool_suite)
     RUN_TEST(test_page_pool_free__nonempty);
     RUN_TEST(test_page_pool_free__null);
 }
+
+
+/* btree tests */
+
+typedef struct {
+    page_pool_t *pool;
+} test_btree_environ_t;
+
+
+void test_btree_setup(test_btree_environ_t *environ)
+{
+    environ->pool = page_pool_init(10);
+}
+
+
+void test_btree_teardown(test_btree_environ_t *environ)
+{
+    page_pool_free(environ->pool);
+}
+
+
+TEST test_btree_allocate__normal(test_btree_environ_t *environ)
+{
+    // Allocate a regular btree.
+    btree_t *btree = btree_allocate(environ->pool, sizeof(unsigned int), sizeof(int));
+    ASSERT(btree != NULL);
+
+    btree_free(btree);
+
+    PASS();
+}
+
+
+TEST test_btree_allocate__key_size_0(test_btree_environ_t *environ)
+{
+    // Do not allow the key_size to be 0.
+    btree_t *btree = btree_allocate(environ->pool, 0, sizeof(int));
+    ASSERT_EQ(btree, NULL);
+
+    PASS();
+}
+
+
+TEST test_btree_allocate__data_size_0(test_btree_environ_t *environ)
+{
+    // Do not allow the data_size to be 0.
+    btree_t *btree = btree_allocate(environ->pool, sizeof(unsigned int), 0);
+    ASSERT_EQ(btree, NULL);
+
+    PASS();
+}
+
+
+TEST test_btree_allocate__null_pool(test_btree_environ_t *environ)
+{
+    // Require a pool.
+    btree_t *btree = btree_allocate(NULL, sizeof(unsigned int), sizeof(int));
+
+    PASS();
+}
+
+
+TEST test_btree_allocate__twice_on_same_pool(test_btree_environ_t *environ)
+{
+    // Allocate two btrees backed by the same pool.
+    btree_t *btree1 = btree_allocate(environ->pool, sizeof(unsigned int), sizeof(int));
+    btree_t *btree2 = btree_allocate(environ->pool, sizeof(unsigned int), sizeof(int));
+
+    ASSERT(btree1 != NULL);
+    ASSERT(btree2 != NULL);
+    ASSERT(btree1 != btree2);
+
+    PASS();
+}
+
+
+GREATEST_SUITE(btree_suite)
+{
+    test_btree_environ_t environ;
+
+    SET_SETUP((greatest_setup_cb *)test_btree_setup, &environ);
+    SET_TEARDOWN((greatest_setup_cb *)test_btree_teardown, &environ);
+
+    #define BTREE_RUN_TEST(NAME) RUN_TEST1(NAME, (test_btree_environ_t*)&environ)
+
+    BTREE_RUN_TEST(test_btree_allocate__normal);
+    BTREE_RUN_TEST(test_btree_allocate__key_size_0);
+    BTREE_RUN_TEST(test_btree_allocate__data_size_0);
+    BTREE_RUN_TEST(test_btree_allocate__null_pool);
+    BTREE_RUN_TEST(test_btree_allocate__twice_on_same_pool);
+}

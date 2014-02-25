@@ -64,5 +64,19 @@ void page_pool_free(page_pool_t *pool)
     free(pool);
 }
 
-// TODO: add page_free -- why would you ever want to deallocate? :)
+btree_t* btree_allocate(page_pool_t *pool, size_t key_size, size_t data_size)
+{
+    return NULL;
+}
 
+void btree_insert(btree_t *tree, char *key, char *data)
+{
+}
+
+void btree_search(btree_t *tree, char *key, char **data)
+{
+}
+
+void btree_free(btree_t *tree)
+{
+}

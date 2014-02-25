@@ -18,6 +18,7 @@ page_pool_t* page_pool_init(size_t max_len)
     }
     memset(pool->pages, 0, sizeof(page_t*) * max_len);
     pool->max_len = max_len;
+    pool->len = 0;
     return pool;
 }
 

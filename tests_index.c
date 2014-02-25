@@ -25,6 +25,18 @@ TEST test_page_pool_init__too_small() {
     PASS();
 }
 
+TEST test_page_pool_init__twice() {
+    // Allow multiple page_pools.
+    page_pool_t *pool1 = page_pool_init(1);
+    page_pool_t *pool2 = page_pool_init(1);
+
+    ASSERT(pool1 != NULL);
+    ASSERT(pool2 != NULL);
+    ASSERT(pool1 != pool2);
+
+    PASS();
+}
+
 TEST test_page_pool_create_page__normal() {
     // Allocate a single page in a pool, ensure it's zeroed.
     page_pool_t *pool = page_pool_init(2);
@@ -72,6 +84,22 @@ TEST test_page_pool_create_page__pool_full() {
     PASS();
 }
 
+TEST test_page_pool_create_page__two_pools() {
+    // Different pools should allocate different pages.
+    page_pool_t *pool1 = page_pool_init(1);
+    page_pool_t *pool2 = page_pool_init(1);
+    size_t index1, index2;
+    page_t *page1 = page_pool_create_page(pool1, &index1);
+    page_t *page2 = page_pool_create_page(pool2, &index2);
+
+    ASSERT_EQ(index1, 0);
+    ASSERT_EQ(index2, 0);
+    ASSERT(page1 != NULL);
+    ASSERT(page2 != NULL);
+    ASSERT(page1 != page2);
+
+    PASS();
+}
 
 TEST test_page_pool_get_page__normal() {
     // Get a page from a pool when all is fine and dandy.
@@ -133,13 +161,39 @@ TEST test_page_pool_get_page__outside_max_len() {
     PASS();
 }
 
+TEST test_page_pool_get_page__two_pools() {
+    // Different pools should give different pages.
+    page_pool_t *pool1 = page_pool_init(1);
+    page_pool_t *pool2 = page_pool_init(1);
+    size_t index1, index2;
+    page_t *page1 = page_pool_create_page(pool1, &index1);
+    page_t *page2 = page_pool_create_page(pool2, &index2);
+
+    ASSERT_EQ(index1, 0);
+    ASSERT_EQ(index2, 0);
+    ASSERT(page1 != NULL);
+    ASSERT(page2 != NULL);
+    ASSERT(page1 != page2);
+
+    page_t *page1_again = page_pool_get_page(pool1, 0);
+    page_t *page2_again = page_pool_get_page(pool2, 0);
+
+    ASSERT_EQ(page1, page1_again);
+    ASSERT_EQ(page2, page2_again);
+
+    PASS();
+}
+
 GREATEST_SUITE(page_pool_suite) {
     RUN_TEST(test_page_pool_init__normal);
     RUN_TEST(test_page_pool_init__too_small);
+    RUN_TEST(test_page_pool_init__twice);
     RUN_TEST(test_page_pool_create_page__normal);
     RUN_TEST(test_page_pool_create_page__twice);
     RUN_TEST(test_page_pool_create_page__pool_full);
+    RUN_TEST(test_page_pool_create_page__two_pools);
     RUN_TEST(test_page_pool_get_page__normal);
     RUN_TEST(test_page_pool_get_page__not_allocated);
     RUN_TEST(test_page_pool_get_page__outside_max_len);
+    RUN_TEST(test_page_pool_get_page__two_pools);
 }

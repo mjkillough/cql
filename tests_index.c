@@ -2,7 +2,11 @@
 
 #include "index.h"
 
-TEST test_page_pool_init__normal() {
+
+/* page_pool tests */
+
+TEST test_page_pool_init__normal()
+{
     // The page_pool_t structure should be correctly initialized.
     page_pool_t *pool = page_pool_init(5);
 
@@ -17,7 +21,9 @@ TEST test_page_pool_init__normal() {
     PASS();
 }
 
-TEST test_page_pool_init__too_small() {
+
+TEST test_page_pool_init__too_small()
+{
     // Creating a page_pool with max_len=0 should fail.
     page_pool_t *pool = page_pool_init(0);
     ASSERT_EQ(pool, NULL);
@@ -25,7 +31,9 @@ TEST test_page_pool_init__too_small() {
     PASS();
 }
 
-TEST test_page_pool_init__twice() {
+
+TEST test_page_pool_init__twice()
+{
     // Allow multiple page_pools.
     page_pool_t *pool1 = page_pool_init(1);
     page_pool_t *pool2 = page_pool_init(1);
@@ -37,7 +45,9 @@ TEST test_page_pool_init__twice() {
     PASS();
 }
 
-TEST test_page_pool_create_page__normal() {
+
+TEST test_page_pool_create_page__normal()
+{
     // Allocate a single page in a pool, ensure it's zeroed.
     page_pool_t *pool = page_pool_init(2);
     size_t index = 1337;
@@ -51,7 +61,9 @@ TEST test_page_pool_create_page__normal() {
     PASS();
 }
 
-TEST test_page_pool_create_page__twice() {
+
+TEST test_page_pool_create_page__twice()
+{
     // Allow two pages to be allocated in the same pool.
     page_pool_t *pool = page_pool_init(3);
     size_t index1 = 1337;
@@ -68,7 +80,9 @@ TEST test_page_pool_create_page__twice() {
     PASS();
 }
 
-TEST test_page_pool_create_page__pool_full() {
+
+TEST test_page_pool_create_page__pool_full()
+{
     // Error if the pool is already full.
     page_pool_t *pool = page_pool_init(1);
     size_t index1 = 1337;
@@ -84,7 +98,9 @@ TEST test_page_pool_create_page__pool_full() {
     PASS();
 }
 
-TEST test_page_pool_create_page__two_pools() {
+
+TEST test_page_pool_create_page__two_pools()
+{
     // Different pools should allocate different pages.
     page_pool_t *pool1 = page_pool_init(1);
     page_pool_t *pool2 = page_pool_init(1);
@@ -101,7 +117,9 @@ TEST test_page_pool_create_page__two_pools() {
     PASS();
 }
 
-TEST test_page_pool_get_page__normal() {
+
+TEST test_page_pool_get_page__normal()
+{
     // Get a page from a pool when all is fine and dandy.
     page_pool_t *pool = page_pool_init(2);
     size_t index1 = 1337;
@@ -124,7 +142,9 @@ TEST test_page_pool_get_page__normal() {
     PASS();
 }
 
-TEST test_page_pool_get_page__not_allocated() {
+
+TEST test_page_pool_get_page__not_allocated()
+{
     // Error appropriately when getting a page that has not been allocated yet.
     page_pool_t *pool = page_pool_init(2);
     page_t *page;
@@ -139,7 +159,9 @@ TEST test_page_pool_get_page__not_allocated() {
     PASS();
 }
 
-TEST test_page_pool_get_page__outside_max_len() {
+
+TEST test_page_pool_get_page__outside_max_len()
+{
     // Error appropriately when trying to get an index outside the max_len.
     page_pool_t *pool = page_pool_init(2);
     page_t *page1, *page2;
@@ -161,7 +183,9 @@ TEST test_page_pool_get_page__outside_max_len() {
     PASS();
 }
 
-TEST test_page_pool_get_page__two_pools() {
+
+TEST test_page_pool_get_page__two_pools()
+{
     // Different pools should give different pages.
     page_pool_t *pool1 = page_pool_init(1);
     page_pool_t *pool2 = page_pool_init(1);
@@ -184,7 +208,9 @@ TEST test_page_pool_get_page__two_pools() {
     PASS();
 }
 
-GREATEST_SUITE(page_pool_suite) {
+
+GREATEST_SUITE(page_pool_suite)
+{
     RUN_TEST(test_page_pool_init__normal);
     RUN_TEST(test_page_pool_init__too_small);
     RUN_TEST(test_page_pool_init__twice);
